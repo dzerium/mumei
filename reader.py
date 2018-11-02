@@ -37,16 +37,13 @@ class Reader(object):
                 audio_file = self.__read_queue.get()
                 print(audio_file)
                 if (os.name == 'nt'):
-                    p = subprocess.Popen(audio_file)
+                    p = subprocess.Popen((audio_file,))
                 else:
-                    p = subprocess.Popen('mpg321', audio_file, '-quiet')
+                    p = subprocess.Popen(('mpg321 ' + audio_file + ' -quiet',))
                 p.wait()
     # end __read_audio
 
-    def __author_update(self, author):
-        if author == "BPITrade": 
-            return 'B-P-I-Trade'
-        return author
+
 
     def __write_audio(self): 
         while self.__running == True: 
