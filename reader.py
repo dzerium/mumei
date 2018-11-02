@@ -1,5 +1,6 @@
 import threading
 import os
+import subprocess
 import queue
 from gtts import gTTS
 from tweet import Tweet
@@ -12,17 +13,18 @@ class Reader(object):
         self.__running = True
         self.__read_queue = queue.Queue(G_QUEUE_MAX_SIZE)
         self.__write_queue = queue.Queue(G_QUEUE_MAX_SIZE)
-        self.read_thread = threading.Thread(target=self.__read_audio)
-        self.write_thread = threading.Thread(target=self.__write_audio)
 
-        self.read_thread.start()
-        self.write_thread.start()
+        self.__read_thread = threading.Thread(target=self.__read_audio)
+        self.__write_thread = threading.Thread(target=self.__write_audio)
+
+        self.__read_thread.start()
+        self.__write_thread.start()
     #end __init__
 
     def stop(self):
         self.__running = False
-        self.write_thread.join()
-        self.read_thread.join()
+        self.__write_thread.join()
+        self.__read_thread.join()
 
     def write_enqueue(self, message):
         if self.__write_queue.full() is not True:
@@ -33,11 +35,18 @@ class Reader(object):
         while self.__running == True:
             if self.__read_queue.empty() == False:
                 audio_file = self.__read_queue.get()
+                print(audio_file)
                 if (os.name == 'nt'):
-                    os.system(audio_file)
+                    p = subprocess.Popen(audio_file)
                 else:
-                    os.system('mpg321 ' + audio_file + ' -quiet')
+                    p = subprocess.Popen('mpg321', audio_file, '-quiet')
+                p.wait()
     # end __read_audio
+
+    def __author_update(self, author):
+        if author == "BPITrade": 
+            return 'B-P-I-Trade'
+        return author
 
     def __write_audio(self): 
         while self.__running == True: 

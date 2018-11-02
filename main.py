@@ -3,6 +3,7 @@ import os
 import twitter
 from reader import Reader
 from tweet import Tweet
+from time import sleep 
 
 G_CONSUMER_KEY = 'DfaKNLkzFPbDqmItGJMdgy2Ae'
 G_CONSUMER_SECRET_KEY = 'WpI2UxKxj6bnXJU7uLIG8iEd0PI8KDvlQoBzdleRg84dyvcg5x'
@@ -31,6 +32,5 @@ if __name__ == '__main__':
         for status in statuses:
             tweet = Tweet(status.id_str, user.screen_name, status.created_at, status.text)
             audio_read.write_enqueue(tweet)
-        break
-
+        
     audio_read.stop()
